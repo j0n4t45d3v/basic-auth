@@ -23,8 +23,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.
                 authorizeHttpRequests(auth -> {
+                    //rota publica
                     auth.requestMatchers("/api/public").permitAll();
+                    //so será possivel acessar essa rotar se for o ADMIN
                     auth.requestMatchers("/api/admin").hasRole("ADMIN");
+                    //so será possivel acessar essa rotar se for um USER ou ADMIN
                     auth.requestMatchers("/api/user").hasAnyRole("USER", "ADMIN");
                     auth.anyRequest().authenticated();
                 })
@@ -36,11 +39,13 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
+        //cria o usuario
         UserDetails admin = User.builder()
                 .username("jonatas")
                 .password("admin123")
                 .roles("ADMIN")
                 .build();
+
         UserDetails user = User.builder()
                 .username("user")
                 .password("user123")
@@ -49,6 +54,7 @@ public class SecurityConfig {
 
         List<UserDetails> users = List.of(admin, user);
 
+//        guarda os usuarios
         return new InMemoryUserDetailsManager(users);
     }
 }
